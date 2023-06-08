@@ -1,17 +1,17 @@
 version: '3'
 services:
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 7000:7000
-  #   volumes:
-  #     - ./www:/var/www
-  #   networks:
-  #     - symfony_app
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 7000:7000
+    volumes:
+      - ./www:/var/www
+    networks:
+      - symfony_app
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -53,19 +53,16 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
     networks:
-      - symfony_app
-  fastcgi:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    # Autres paramètres spécifiques à votre application FastCGI
+      - symfony_app 
   nginx:
     image: nginx:latest
     ports:
       - 80:80
     volumes:
-        - ./www:/var/www
+        - ./www:/usr/share/nginx/html
     depends_on:
+      - symfony
+    links:
       - symfony
 
 volumes:

@@ -1,9 +1,21 @@
-# Dockerfile pour le dossier frontend avec Node.js
-FROM node:14
+FROM jenkins/jenkins
 
-RUN apt-get install -y git-core curl build-essential openssl libssl-dev \
-    && git clone https://github.com/nodejs/node.git \
-    && cd node \
-    && ./configure \
-    && make \
-    && sudo make install
+USER root
+
+RUN apt-get update \
+    && apt-get install -y curl \
+    && apt-get install -y sudo \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs \
+    && curl -L https://www.npmjs.com/install.sh | bash
+
+# Set the permissions for the Jenkins user
+RUN chown -R jenkins:jenkins /var/jenkins_home
+
+RUN cat /etc/group
+
+RUN groupadd -g 993 docker
+
+RUN gpasswd -a jenkins docker
+
+USER jenkins
