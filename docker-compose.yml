@@ -1,0 +1,76 @@
+version: '3'
+services:
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 7000:7000
+  #   volumes:
+  #     - ./www:/var/www
+  #   networks:
+  #     - symfony_app
+  #   depends_on:
+  #     - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8000:80
+    volumes:
+      - ./www:/var/www
+    networks:
+      - symfony_app
+
+  symfony:
+    build:
+      context: ./symfony
+      dockerfile: Dockerfile
+    volumes:
+      - ./php.ini:/usr/local/etc/php/php.ini:ro
+      - ./www:/var/www
+    networks:
+      - symfony_app
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  database:
+    image: mysql:5.7
+    ports:
+      - 3308:3306
+    environment:          
+      MYSQL_ROOT_PASSWORD: Foutaise.1
+      MYSQL_DATABASE: api
+      MYSQL_USER: doloresHaze
+      MYSQL_PASSWORD: Foutaise.1    
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - symfony_app
+  fastcgi:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    # Autres paramètres spécifiques à votre application FastCGI
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+        - ./www:/var/www
+    depends_on:
+      - symfony
+
+volumes:
+    symfony_app_var:
+    symfony_app_vendor:
+    db_app:
+networks:
+  symfony_app:
