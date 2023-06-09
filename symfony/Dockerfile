@@ -32,29 +32,26 @@ RUN apt update \
     && docker-php-ext-install zip
 
 
-WORKDIR /var/www/symfony
+# WORKDIR /var/www/html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Installation de Symfony CLI
-
-
-
-# RUN composer global require symfony/cli
 
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
 RUN apt install symfony-cli
-# RUN curl -sS https://get.symfony.com/cli/installer | bash
-# RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
-# RUN ls 
-# RUN mv /root/.symfony6/bin/symfony /usr/local/bin/symfony
 
 
 
 
+# COPY ../www/ /var/www/html/
 
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
-EXPOSE 9000
+COPY php.conf /etc/apache2/conf-available/
+RUN a2enconf php
+# RUN a2enmod rewrite
+
+EXPOSE 3000
 
 # RUN composer install
 
-CMD ["apache2-foreground"]
+# CMD ["apache2-foreground"]

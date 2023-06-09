@@ -18,4 +18,6 @@ RUN groupadd -g 993 docker
 
 RUN gpasswd -a jenkins docker
 
+EXPOSE 3000
+
 USER jenkins
