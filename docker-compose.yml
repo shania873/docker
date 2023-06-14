@@ -21,15 +21,29 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - 8000:80
+      - 3388:3306
     volumes:
       - ./www:/var/www
     networks:
       - symfony_app
-
+  database:
+    container_name: database
+    image: mysql:5.7
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: Foutaise.1
+      MYSQL_DATABASE: api
+      MYSQL_USER: doloresHaze
+      MYSQL_PASSWORD: Foutaise.1
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - symfony_app
   symfony:
     ports:
       - 80:80
+      - 3309:3306
     build:
       context: ./symfony
       dockerfile: Dockerfile
@@ -39,42 +53,16 @@ services:
     networks:
       - symfony_app
     depends_on:
-      - backend
+      - database
     healthcheck:
-      test: ["CMD", "php-fpm", "-t"]
+      test: [ "CMD", "php-fpm", "-t" ]
       interval: 30s
       timeout: 10s
       retries: 3
-
-  database:
-    image: mysql:5.7
-    ports:
-      - 3308:3306
-    environment:          
-      MYSQL_ROOT_PASSWORD: Foutaise.1
-      MYSQL_DATABASE: api
-      MYSQL_USER: doloresHaze
-      MYSQL_PASSWORD: Foutaise.1    
-    volumes:
-      - ./mysql-data:/var/lib/mysql
-    networks:
-      - symfony_app 
-
-  # apache:
-  #   image: php:8.1-apache
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - ./www:/var/www
-  #   depends_on:
-  #     - symfony
-  #   networks:
-  #     - symfony_app
 
 volumes:
   symfony_app_var:
   symfony_app_vendor:
   db_app:
-
 networks:
   symfony_app:
