@@ -43,7 +43,6 @@ services:
   symfony:
     ports:
       - 80:80
-      - 3309:3306
     build:
       context: ./symfony
       dockerfile: Dockerfile
