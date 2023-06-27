@@ -1,23 +1,13 @@
-FROM jenkins/jenkins
+# Utilisez une image de base avec Java et Jenkins préinstallés
+FROM jenkins/jenkins:lts-jdk11
 
+# Basculer en root pour installer les outils nécessaires
 USER root
 
-RUN apt-get update \
-    && apt-get install -y curl \
-    && apt-get install -y sudo \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y nodejs \
-    && curl -L https://www.npmjs.com/install.sh | bash
+# Installer Node.js
+RUN apt-get update && apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
 
-# Set the permissions for the Jenkins user
-RUN chown -R jenkins:jenkins /var/jenkins_home
-
-RUN cat /etc/group
-
-RUN groupadd -g 993 docker
-
-RUN gpasswd -a jenkins docker
-
-EXPOSE 3000
-
+# Revenir à l'utilisateur Jenkins
 USER jenkins
